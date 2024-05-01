@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../buildMultiTargeting/MinimalAPI-EF-Postgres.props" />
-</Project>
