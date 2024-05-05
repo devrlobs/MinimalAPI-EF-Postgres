@@ -25,11 +25,16 @@ public partial class PostgresContext : DbContext
     {
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("user_pk");
+            entity.HasKey(e => e.Id).HasName("users_pk");
 
-            entity.ToTable("User");
+            entity.ToTable("users");
 
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.HasIndex(e => e.Username, "users_unique").IsUnique();
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.Age).HasColumnName("age");
             entity.Property(e => e.Password)
                 .HasColumnType("character varying")
                 .HasColumnName("password");

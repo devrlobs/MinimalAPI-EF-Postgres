@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<PostgresContext>(options =>
-            options.UseNpgsql("Host=localhost:15432;Database=postgres;Username=postgres;Password=test1234"));
+            options.UseNpgsql(builder.Configuration["PostgresDBConnection"]));
             
 
 var app = builder.Build();
@@ -20,14 +20,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
 app.MapGet("/getusers", async (PostgresContext db) =>
 {
-    var test = await db.Users.ToListAsync();
-    return test;
+    var userlist = await db.Users.ToListAsync();
+    return userlist;
 })
-.WithName("GetWeatherForecast")
+.WithName("getusers")
 .WithOpenApi();
 
 app.MapPost("/insertuser", async (PostgresContext db, User user) =>
@@ -44,12 +42,10 @@ app.MapPost("/insertuser", async (PostgresContext db, User user) =>
 app.MapPut("/updateuser/{id}", async (PostgresContext db, int id, User user) =>
 {
     var userToUpdate = await db.Users.FindAsync(id);
-
     if(userToUpdate is null) return Results.NotFound();
 
     userToUpdate.Username = user.Username;
     userToUpdate.Password = user.Password;
-
     await db.SaveChangesAsync();
 
     return Results.NoContent();
@@ -58,7 +54,6 @@ app.MapPut("/updateuser/{id}", async (PostgresContext db, int id, User user) =>
 app.MapDelete("/deleteuser/{id}", async (PostgresContext db, int id) => 
 {
     var userToDelete = await db.Users.FindAsync(id);
-
     if(userToDelete is not null)
     {
         db.Users.Remove(userToDelete);
