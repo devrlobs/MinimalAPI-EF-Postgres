@@ -49,7 +49,9 @@ app.MapPut("/updateuser/{id}", async (PostgresContext db, int id, User user) =>
     await db.SaveChangesAsync();
 
     return Results.NoContent();
-});
+})
+.WithName("updateuser")
+.WithOpenApi();
 
 app.MapDelete("/deleteuser/{id}", async (PostgresContext db, int id) => 
 {
@@ -60,7 +62,9 @@ app.MapDelete("/deleteuser/{id}", async (PostgresContext db, int id) =>
         await db.SaveChangesAsync();
     }
     return Results.NotFound();
-});
+})
+.WithName("deleteuser")
+.WithOpenApi();
 
 
 app.Run();
